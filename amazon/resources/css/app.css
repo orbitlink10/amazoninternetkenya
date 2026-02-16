@@ -1,0 +1,115 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Rich text styling for product & category descriptions */
+.rich-copy {
+    font-family: var(--font-sans);
+    color: #0f172a; /* slate-900-ish */
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+.rich-copy h1,
+.rich-copy h2,
+.rich-copy h3,
+.rich-copy h4 {
+    color: #0f3b66;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 1.2em 0 0.4em;
+}
+.rich-copy h1 { font-size: 2.5rem; margin-top: 1.2em; }
+.rich-copy h2 { font-size: 2rem; margin-top: 1.1em; }
+.rich-copy h3 { font-size: 1.65rem; margin-top: 1em; }
+.rich-copy h4 { font-size: 1.35rem; margin-top: 0.9em; }
+.rich-copy p { margin: 0.9em 0; }
+.rich-copy strong { font-weight: 800; }
+.rich-copy a { color: #0f75b8; text-decoration: underline; }
+.rich-copy ul, .rich-copy ol { margin: 0.9em 0 0.9em 1.25em; }
+.rich-copy li { margin-bottom: 0.35em; }
+.rich-copy ul { list-style: disc; }
+.rich-copy ol { list-style: decimal; }
+
+/* Theme button */
+.btn-theme {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.4rem;
+    border-radius: 9999px;
+    background: linear-gradient(180deg, #ff9b34 0%, #ff8a1f 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 10px 20px rgba(255, 138, 31, 0.25);
+    transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+    border: none;
+    text-decoration: none;
+}
+.btn-theme:hover {
+    filter: brightness(0.97);
+    box-shadow: 0 14px 26px rgba(255, 138, 31, 0.32);
+}
+.btn-theme:active {
+    transform: translateY(1px);
+}
+
+/* Force theme on generic buttons/links we can safely target */
+.btn-theme,
+button.btn-theme,
+a.btn-theme,
+button[type=submit].btn-theme {
+    background: linear-gradient(180deg, #ff9b34 0%, #ff8a1f 100%) !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+/* A few fallbacks where buttons still use default classes */
+button,
+.btn,
+.btn-primary,
+.btn-theme-force {
+    font-family: inherit;
+}
+
+/* New design system buttons */
+.btn-orange {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.4rem;
+    border-radius: 14px;
+    background: #ff951e;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(255, 149, 30, 0.28);
+    border: none;
+    text-decoration: none;
+    transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+.btn-orange:hover { filter: brightness(0.97); box-shadow: 0 12px 24px rgba(255,149,30,0.32); }
+.btn-orange:active { transform: translateY(1px); }
+
+.btn-outline-blue {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.4rem;
+    border-radius: 14px;
+    border: 2px solid #1f7aff;
+    color: #1f7aff;
+    font-weight: 700;
+    background: #fff;
+    text-decoration: none;
+    transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+    box-shadow: 0 6px 16px rgba(31,122,255,0.16);
+}
+.btn-outline-blue:hover { filter: brightness(0.97); box-shadow: 0 9px 18px rgba(15,59,102,0.16); }
+.btn-outline-blue:active { transform: translateY(1px); }

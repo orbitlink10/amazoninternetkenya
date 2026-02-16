@@ -1,0 +1,15 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Let requests that already point at public/ or ACME challenges pass through
+    RewriteCond %{REQUEST_URI} ^/public/ [NC]
+    RewriteRule ^ - [L]
+
+    RewriteCond %{REQUEST_URI} ^/\.well-known/ [NC]
+    RewriteRule ^ - [L]
+
+    # Send everything else to the Laravel public directory
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>
