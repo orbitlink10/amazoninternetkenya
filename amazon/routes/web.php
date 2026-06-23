@@ -346,6 +346,110 @@ Route::middleware('admin.auth')->group(function () {
         return redirect()->route('admin.pages')->with('success', 'Page saved and ready to preview.');
     })->name('admin.pages.store');
 
+    Route::get('/admin/pages/{pageId}/edit', function (int $pageId) {
+        $pages = [];
+        if (Storage::disk('local')->exists('pages.json')) {
+            $pages = json_decode(Storage::disk('local')->get('pages.json'), true) ?? [];
+        }
+
+        $page = collect($pages)->firstWhere('id', $pageId);
+        abort_if(!$page, 404);
+
+        return view('admin.pages.edit', ['page' => $page]);
+    })->name('admin.pages.edit');
+
+    Route::put('/admin/pages/{pageId}', function (Request $request, int $pageId) {
+        $data = $request->validate([
+            'meta_title' => ['required', 'string', 'max:160'],
+            'meta_description' => ['nullable', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:180'],
+            'alt' => ['nullable', 'string', 'max:160'],
+            'type' => ['required', 'in:Post,Page'],
+            'description' => ['required', 'string'],
+            'image' => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        $pages = [];
+        if (Storage::disk('local')->exists('pages.json')) {
+            $pages = json_decode(Storage::disk('local')->get('pages.json'), true) ?? [];
+        }
+
+        $pageIndex = collect($pages)->search(fn ($page) => (int) ($page['id'] ?? 0) === $pageId);
+        abort_if($pageIndex === false, 404);
+
+        $existingPage = $pages[$pageIndex];
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('pages', 'public');
+        } else {
+            $data['image'] = $existingPage['image'] ?? null;
+        }
+
+        $baseSlug = Str::slug($data['title']);
+        $slug = $baseSlug;
+        $i = 1;
+        $existingSlugs = collect($pages)
+            ->reject(fn ($page) => (int) ($page['id'] ?? 0) === $pageId)
+            ->pluck('slug')
+            ->filter()
+            ->all();
+
+        while (in_array($slug, $existingSlugs)) {
+            $slug = $baseSlug . '-' . $i++;
+        }
+
+        $pages[$pageIndex] = array_merge($existingPage, $data, [
+            'id' => $pageId,
+            'slug' => $slug,
+        ]);
+
+        Storage::disk('local')->put('pages.json', json_encode(array_values($pages), JSON_PRETTY_PRINT));
+
+        return redirect()->route('admin.pages')->with('success', 'Page updated.');
+    })->name('admin.pages.update');
+
+    Route::delete('/admin/pages/{pageId}', function (int $pageId) {
+        $pages = [];
+        if (Storage::disk('local')->exists('pages.json')) {
+            $pages = json_decode(Storage::disk('local')->get('pages.json'), true) ?? [];
+        }
+
+        $remainingPages = collect($pages)
+            ->reject(fn ($page) => (int) ($page['id'] ?? 0) === $pageId)
+            ->values()
+            ->all();
+
+        abort_if(count($remainingPages) === count($pages), 404);
+
+        Storage::disk('local')->put('pages.json', json_encode($remainingPages, JSON_PRETTY_PRINT));
+
+        return redirect()->route('admin.pages')->with('success', 'Page deleted.');
+    })->name('admin.pages.destroy');
+
+    Route::post('/admin/pages/bulk', function (Request $request) {
+        $data = $request->validate([
+            'bulk_action' => ['required', 'in:delete'],
+            'selected_ids' => ['required', 'array', 'min:1'],
+            'selected_ids.*' => ['integer'],
+        ]);
+
+        $selectedIds = collect($data['selected_ids'])->map(fn ($id) => (int) $id)->all();
+        $pages = [];
+        if (Storage::disk('local')->exists('pages.json')) {
+            $pages = json_decode(Storage::disk('local')->get('pages.json'), true) ?? [];
+        }
+
+        $remainingPages = collect($pages)
+            ->reject(fn ($page) => in_array((int) ($page['id'] ?? 0), $selectedIds, true))
+            ->values()
+            ->all();
+
+        $deletedCount = count($pages) - count($remainingPages);
+        Storage::disk('local')->put('pages.json', json_encode($remainingPages, JSON_PRETTY_PRINT));
+
+        return redirect()->route('admin.pages')->with('success', $deletedCount . ' page(s) deleted.');
+    })->name('admin.pages.bulk');
+
     Route::post('/admin/logout', function (Request $request) {
         $request->session()->forget('admin_auth');
         return redirect()->route('admin.login')->with('success', 'Logged out successfully.');
