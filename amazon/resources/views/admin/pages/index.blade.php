@@ -55,12 +55,16 @@
                                 <div class="w-20 h-20 rounded border border-slate-200 overflow-hidden bg-slate-100 flex items-center justify-center">
                                 @php
                                     $img = $post['image'] ?? null;
-                                    if ($img && !str_starts_with($img, 'http')) {
+                                    if ($img && str_starts_with($img, '/storage/')) {
+                                        $img = asset(ltrim($img, '/'));
+                                    } elseif ($img && str_starts_with($img, 'storage/')) {
+                                        $img = asset($img);
+                                    } elseif ($img && !str_starts_with($img, 'http')) {
                                         $img = asset('storage/' . ltrim($img, '/'));
                                     }
                                     $img = $img ?: 'https://via.placeholder.com/120x120?text=No+Image';
                                 @endphp
-                                <img src="{{ $img }}" alt="{{ $post['alt'] ?? $post['title'] }}" class="w-full h-full object-contain">
+                                <img src="{{ $img }}" alt="{{ $post['alt'] ?? $post['title'] }}" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://via.placeholder.com/120x120?text=No+Image';">
                             </div>
                         </td>
                         <td class="px-4 py-3 font-semibold">{{ $post['title'] }}</td>

@@ -474,7 +474,11 @@ Route::get('/{slug}', function (string $slug) {
     // Resolve image URL
     $image = $page['image'] ?? null;
     if ($image) {
-        if (!Str::startsWith($image, ['http://', 'https://', '//'])) {
+        if (Str::startsWith($image, ['/storage/'])) {
+            $image = asset(ltrim($image, '/'));
+        } elseif (Str::startsWith($image, ['storage/'])) {
+            $image = asset($image);
+        } elseif (!Str::startsWith($image, ['http://', 'https://', '//'])) {
             $image = asset('storage/' . $image);
         }
     } else {
