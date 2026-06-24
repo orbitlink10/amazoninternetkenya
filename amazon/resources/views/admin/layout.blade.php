@@ -18,7 +18,7 @@
             <aside class="w-72 bg-white border-r border-slate-200 shadow-sm hidden md:flex flex-col">
                 <div class="px-6 py-6 border-b border-slate-200">
                     <a href="{{ url('/') }}" class="text-2xl font-extrabold text-slate-900 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200 rounded">
-                        Spacelink Kenya
+                        amazon Leo Internet
                     </a>
                 </div>
                 <div class="px-6 py-4 text-xs uppercase tracking-wide text-slate-500">Content Management</div>
